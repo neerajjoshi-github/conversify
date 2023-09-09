@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Inter, Dancing_Script } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { StateProvider } from "@/components/providers/StateProvider";
+import DialogProvider from "@/components/providers/DialogProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 const dancingScript = Dancing_Script({
@@ -23,9 +25,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} ${dancingScript.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Toaster />
-          {children}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <StateProvider>
+            <DialogProvider>
+              <Toaster />
+              {children}
+            </DialogProvider>
+          </StateProvider>
         </ThemeProvider>
       </body>
     </html>

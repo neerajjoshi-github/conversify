@@ -11,7 +11,7 @@ const chatSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    users: [
+    members: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",

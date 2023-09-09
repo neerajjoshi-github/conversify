@@ -5,11 +5,16 @@ const axiosInstance = axios.create({
 });
 
 const axiosHandler = async (data: AxiosRequestConfig) => {
+  console.log(`Bearer ${JSON.parse(localStorage.getItem("userInfo")!).token!}`);
   try {
     const response = await axiosInstance({
       method: data.method,
       url: data.url,
       data: data.data,
+      headers: {
+        authorization: `Bearer ${JSON.parse(localStorage.getItem("userInfo")!)
+          .token!}`,
+      },
     });
 
     return {

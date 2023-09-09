@@ -5,6 +5,9 @@ import cors from "cors";
 import createHttpError, { isHttpError } from "http-errors";
 import { Server } from "socket.io";
 import authRoutes from "./routes/authRoutes";
+import userRoutes from "./routes/userRoutes";
+import chatRoutes from "./routes/chatRoutes";
+import { authMiddleware } from "./middleware/authMiddleware";
 
 const server = createServer(app);
 const io = new Server(server);
@@ -13,6 +16,8 @@ app.use(express.json());
 app.use(cors({ origin: "http://localhost:3000" }));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", authMiddleware, userRoutes);
+app.use("/api/chats", authMiddleware, chatRoutes);
 
 app.use((req, res, next) => {
   next(createHttpError(404, "Page not found!!!"));

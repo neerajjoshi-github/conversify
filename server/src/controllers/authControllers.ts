@@ -6,11 +6,11 @@ import bcrypt from "bcrypt";
 
 export const register: RequestHandler = async (req, res, next) => {
   const { username, email, password } = req.body;
-  if (!username || !email || !password) {
-    throw createHttpError(422, "Error: Missing required fields.");
-  }
 
   try {
+    if (!username || !email || !password) {
+      throw createHttpError(422, "Error: Missing required fields.");
+    }
     const existingUserWithUsername = await UserModel.findOne({ username });
     const existingUserWithEmail = await UserModel.findOne({ email });
     if (existingUserWithUsername || existingUserWithEmail) {
@@ -44,11 +44,11 @@ export const register: RequestHandler = async (req, res, next) => {
 
 export const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    throw createHttpError(404, "Invaild email or password.");
-  }
 
   try {
+    if (!email || !password) {
+      throw createHttpError(404, "Invaild email or password.");
+    }
     const user = await UserModel.findOne({ email });
     if (!user) {
       throw createHttpError(404, "Invaild email or password.");
