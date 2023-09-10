@@ -1,17 +1,57 @@
 "use client";
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { AiOutlineSend } from "react-icons/ai";
-import { BsEmojiSmile } from "react-icons/bs";
+import React, { useState, useEffect, useRef } from "react";
 import ChatHeader from "@/components/dashboard/ChatHeader";
-import { Input } from "@/components/ui/input";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/reduxStore/store";
 import Lottie from "lottie-react";
 import ChatAnimation from "../../public/lotti-animation/chat-animation.json";
+import { getAllMessagesForAChat } from "@/lib/api-helpers/messages";
+import { MessageType } from "@/lib/api-helpers/messages";
+import MessageCard from "./MessageCard";
+import { ScrollArea } from "../ui/scroll-area";
+import ChatFooter from "./ChatFooter";
+import { Button } from "../ui/button";
+import { setLatestMessage } from "@/lib/reduxStore/slices/chatsSlice";
 
 const ChatContainer = () => {
+  const dispatch = useDispatch();
   const { currentChat } = useSelector((state: RootState) => state.chats);
+  const { data } = useSelector((state: RootState) => state.user);
+  const { socket } = useSelector((state: RootState) => state.socket);
+  const [messages, setMessages] = useState<MessageType[]>([]);
+
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  const getMessages = async () => {
+    if (!currentChat) return null;
+    const response = await getAllMessagesForAChat(currentChat._id);
+    if (response.success) {
+      setMessages(response.data);
+    }
+  };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView();
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("message recieved", (newMessageRecieved: MessageType) => {
+      dispatch(setLatestMessage(newMessageRecieved));
+      if (!currentChat || currentChat._id !== newMessageRecieved.chat._id) {
+        // give notificaion
+      } else {
+        setMessages([...messages, newMessageRecieved]);
+      }
+    });
+  });
+
+  useEffect(() => {
+    getMessages();
+  }, [currentChat]);
+
   if (!currentChat)
     return (
       <div className="flex-1 h-full flex flex-col gap-4 items-center justify-center">
@@ -23,17 +63,21 @@ const ChatContainer = () => {
     );
 
   return (
-    <div className="flex-1 h-full relative">
+    <div className="flex-1 h-full relative flex flex-col">
       <ChatHeader />
-      <div className="z-10 absolute bottom-0 left-0 w-full bg-secondary h-14 flex items-center gap-1">
-        <Button variant="ghost" size="icon">
-          <BsEmojiSmile size={28} className="active:scale-95" />
-        </Button>
-        <Input className="bg-background flex-1" placeholder="Type a message" />
-        <Button variant="ghost" size="icon" title="Send">
-          <AiOutlineSend size={28} />
-        </Button>
+      <div className="w-full flex-1 overflow-hidden">
+        <ScrollArea className="h-full w-full">
+          <div className="flex flex-col gap-2 h-full px-6 pb-2">
+            <div className="flex-1"></div>
+            {messages &&
+              messages.map((message) => (
+                <MessageCard key={message._id} message={message} />
+              ))}
+            <div ref={scrollRef}></div>
+          </div>
+        </ScrollArea>
       </div>
+      <ChatFooter refetchMessages={getMessages} />
     </div>
   );
 };

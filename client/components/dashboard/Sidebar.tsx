@@ -10,14 +10,17 @@ import { ChatType, getUserChats } from "@/lib/api-helpers/chats";
 import UserCard from "@/components/dashboard/UserCard";
 import { Button } from "@/components/ui/button";
 import { IoMdAdd } from "react-icons/io";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleIsCreateGroupModalOpen } from "@/lib/reduxStore/slices/dialogSlice";
+import { RootState } from "@/lib/reduxStore/store";
+import { setUserChats } from "@/lib/reduxStore/slices/chatsSlice";
+import ChatSkeleton from "./skeletons/ChatSkeleton";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const [searchedInput, setsearchedInput] = useState("");
   const [searchedUsers, setSearchedUsers] = useState<UserFromDB[] | null>(null);
-  const [userChats, setUserChats] = useState<ChatType[] | null>(null);
+  const { userChats } = useSelector((state: RootState) => state.chats);
 
   const searchUsers = async () => {
     const response = await search(searchedInput);
@@ -29,7 +32,7 @@ const Sidebar = () => {
   const getChats = async () => {
     const response = await getUserChats();
     if (response.success) {
-      setUserChats(response.data);
+      dispatch(setUserChats(response.data));
     }
   };
 
@@ -69,10 +72,23 @@ const Sidebar = () => {
             searchedUsers.map((user) => {
               return <UserCard user={user} key={user._id} />;
             })} */}
-          {userChats &&
+
+          {userChats ? (
             userChats.map((chat) => {
               return <ChatCard chatData={chat} key={chat._id} />;
-            })}
+            })
+          ) : (
+            <>
+              <ChatSkeleton />
+              <ChatSkeleton />
+              <ChatSkeleton />
+              <ChatSkeleton />
+              <ChatSkeleton />
+              <ChatSkeleton />
+              <ChatSkeleton />
+              <ChatSkeleton />
+            </>
+          )}
         </ScrollArea>
       </div>
     </div>

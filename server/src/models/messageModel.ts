@@ -24,6 +24,6 @@ const messageSchema = new Schema(
 );
 
 type Message = InferSchemaType<typeof messageSchema>;
-const MessageModel = model<Message>("Messagae", messageSchema);
+const MessageModel = model<Message>("Message", messageSchema);
 
 export default MessageModel;

@@ -57,3 +57,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+.scroll-area-primitive > div {
+  height: 100%;
+}
+
+.flip {
+  transform: rotateY(180deg);
+}

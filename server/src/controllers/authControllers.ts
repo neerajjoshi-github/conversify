@@ -44,6 +44,7 @@ export const register: RequestHandler = async (req, res, next) => {
 
 export const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
+  console.log("HELLO FROM LOGIN FORM : ");
 
   try {
     if (!email || !password) {

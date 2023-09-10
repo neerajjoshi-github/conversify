@@ -27,6 +27,7 @@ import { createGroupChat } from "@/lib/api-helpers/chats";
 import { toast } from "../ui/use-toast";
 import AsyncSelect from "react-select/async";
 import { UserFromDB, search } from "@/lib/api-helpers/user";
+import { addNewUserChat } from "@/lib/reduxStore/slices/chatsSlice";
 
 const searchUsers = async (inputValue: string) => {
   const response = await search(inputValue);
@@ -63,6 +64,7 @@ const CreateNewGroupDialog = () => {
       toast({
         description: response.message,
       });
+      dispatch(addNewUserChat(response.data));
       form.reset();
       return dispatch(toggleIsCreateGroupModalOpen());
     } else {

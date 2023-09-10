@@ -4,16 +4,21 @@ const axiosInstance = axios.create({
   baseURL: "http://localhost:8080/api/",
 });
 
+const getToken = () => {
+  if (window !== undefined && localStorage.getItem("userInfo")) {
+    return JSON.parse(localStorage.getItem("userInfo")!)?.token || "";
+  }
+};
+
 const axiosHandler = async (data: AxiosRequestConfig) => {
-  console.log(`Bearer ${JSON.parse(localStorage.getItem("userInfo")!).token!}`);
+  console.log(`Bearer ${getToken()}`);
   try {
     const response = await axiosInstance({
       method: data.method,
       url: data.url,
       data: data.data,
       headers: {
-        authorization: `Bearer ${JSON.parse(localStorage.getItem("userInfo")!)
-          .token!}`,
+        authorization: `Bearer ${getToken()}`,
       },
     });
 

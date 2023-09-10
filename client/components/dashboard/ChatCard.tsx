@@ -5,6 +5,7 @@ import { getSingleChatName } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
 import { useDispatch } from "react-redux";
+import moment from "moment";
 
 type ChatCardProps = {
   chatData: ChatType;
@@ -39,10 +40,14 @@ const ChatCard: React.FC<ChatCardProps> = ({ chatData }) => {
               ? chatData.chatName
               : getSingleChatName(chatData.members, "")}
           </span>
-          <p className="text-xs truncate text-zinc-500">long time no see..</p>
+          <p className="text-xs truncate text-zinc-500">
+            {chatData.latestMessage?.content}
+          </p>
         </div>
         <div className="flex items-end">
-          <span className="text-zinc-500 text-xs">10:00pm</span>
+          <span className="text-zinc-500 text-xs">
+            {moment(chatData?.latestMessage?.createdAt).fromNow()}
+          </span>
         </div>
       </div>
     </div>

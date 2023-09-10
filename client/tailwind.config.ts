@@ -20,6 +20,9 @@ const config: Config = {
       fontFamily: {
         "dancing-script": ["var(--font-dancing-script)"],
       },
+      fontSize: {
+        xxs: ["10px", "16px"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

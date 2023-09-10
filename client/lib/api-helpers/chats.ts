@@ -1,13 +1,6 @@
 import axiosHandler from "./axiosHandler";
 import { UserFromDB } from "./user";
-
-export type MessageType = {
-  sender: UserFromDB;
-  content: string;
-  chat: string;
-  createdAt: string;
-  updatedAt: string;
-};
+import { MessageType } from "./messages";
 
 export type ChatType = {
   _id: string;

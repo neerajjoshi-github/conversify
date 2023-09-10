@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { StateProvider } from "@/components/providers/StateProvider";
 import DialogProvider from "@/components/providers/DialogProvider";
+import { SocketProvider } from "@/components/providers/SocketProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 const dancingScript = Dancing_Script({
@@ -27,10 +28,12 @@ export default function RootLayout({
       <body className={`${inter.className} ${dancingScript.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <StateProvider>
-            <DialogProvider>
-              <Toaster />
-              {children}
-            </DialogProvider>
+            <SocketProvider>
+              <DialogProvider>
+                <Toaster />
+                {children}
+              </DialogProvider>
+            </SocketProvider>
           </StateProvider>
         </ThemeProvider>
       </body>
