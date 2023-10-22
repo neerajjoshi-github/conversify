@@ -14,7 +14,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ message }) => {
   const { data } = useSelector((state: RootState) => state.user);
   const isMessageByCurrentUser = data?.userId === message.sender._id;
   return (
-    <div className="relative">
+    <div className="relative mx-4">
       <div
         className={`${
           isMessageByCurrentUser ? "-right-[13px] flip" : " -left-[13px]"
@@ -44,8 +44,8 @@ const MessageCard: React.FC<MessageCardProps> = ({ message }) => {
       <div
         className={` ${
           isMessageByCurrentUser
-            ? "bg-primary text-white ml-auto"
-            : "bg-secondary"
+            ? "bg-primary text-white ml-auto shadow-primary-message"
+            : "bg-secondary shadow-message"
         } pt-1 px-1 pb-3 relative z-[10] max-w-[80%] w-fit rounded-lg min-w-[80px]`}
       >
         <p className="text-sm p-1">{message.content}</p>

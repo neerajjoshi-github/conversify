@@ -12,8 +12,9 @@ const CurrentUserHader = () => {
       <div className="relative w-12 h-12 rounded-full overflow-hidden">
         <Image src={user.imageURL} fill alt="Profile" objectFit="cover" />
       </div>
-      <div className="flex items-center gap-1">
-        <Image src="/svgs/new-chat.svg" width={30} height={30} alt="New Chat" />
+      <div className="flex flex-col gap-1">
+        <span className="font-semibold">{user.username}</span>
+        <span className="text-xs text-zinc-400">{user.email}</span>
       </div>
     </div>
   );

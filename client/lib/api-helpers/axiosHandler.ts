@@ -11,7 +11,6 @@ const getToken = () => {
 };
 
 const axiosHandler = async (data: AxiosRequestConfig) => {
-  console.log(`Bearer ${getToken()}`);
   try {
     const response = await axiosInstance({
       method: data.method,

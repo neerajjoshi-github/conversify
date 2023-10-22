@@ -20,18 +20,25 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("SOCKET CONNECTED");
   socket.on("setup", (userData) => {
+    console.log("😃 USER CONNECTED TO SOCKET WITH ID : ", userData.userId);
     socket.join(userData.userId);
     socket.emit("connected");
   });
 
   socket.on("join chat", (room) => {
-    socket.join(room);
-    console.log("USER JOINED THE CHAT ROOM", room);
+    socket.join(room._id);
+    console.log("🎈 USER JOINED THE CHAT ROOM WITH THE ROOM ID", room._id);
   });
+
+  socket.on("typing", (roomId) => {
+    console.log("SOMEONE IS TYPING IN ROOM  WITH ROOM ID : ", roomId);
+    return socket.in(roomId).emit("typing");
+  });
+  socket.on("stopedTyping", (roomId) => socket.in(roomId).emit("stopedTyping"));
+
   socket.on("new message", (newMessageRecieved) => {
-    console.log("NEW MESSAGE : ", newMessageRecieved);
+    console.log("📨 NEW MESSAGE RECIEVED : ", newMessageRecieved.content);
     let chat = newMessageRecieved.chat;
     if (!chat.members)
       return console.log("Chat users are not defiend  on socket new message");

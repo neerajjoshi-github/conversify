@@ -15,12 +15,16 @@ import { toggleIsCreateGroupModalOpen } from "@/lib/reduxStore/slices/dialogSlic
 import { RootState } from "@/lib/reduxStore/store";
 import { setUserChats } from "@/lib/reduxStore/slices/chatsSlice";
 import ChatSkeleton from "./skeletons/ChatSkeleton";
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { setChatNotification } from "@/lib/reduxStore/slices/notifictionSlice";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const [searchedInput, setsearchedInput] = useState("");
   const [searchedUsers, setSearchedUsers] = useState<UserFromDB[] | null>(null);
   const { userChats } = useSelector((state: RootState) => state.chats);
+  const { currentChat } = useSelector((state: RootState) => state.chats);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const searchUsers = async () => {
     const response = await search(searchedInput);
@@ -44,16 +48,29 @@ const Sidebar = () => {
     getChats();
   }, []);
   return (
-    <div className="min-w-[350px] max-w-[350px] flex flex-col bg-secondary h-full border-r border-border">
+    <div
+      className={`${
+        currentChat ? "max-md:hidden" : "flex"
+      } w-full md:min-w-[350px] md:max-w-[350px] flex flex-col bg-secondary h-full border-r border-border`}
+    >
       <CurrentUserHader />
-      <div className="p-4 flex items-center gap-1">
+      <div className="p-4 flex items-center gap-1 relative">
         <div className="px-2 flex-1 flex items-center gap-[2px] focus-within:border-foreground border border-foreground rounded-md bg-background">
-          <BiSearch size={20} className="" />
+          {isSearchFocused ? (
+            <AiOutlineArrowLeft
+              className="cursor-pointer"
+              onClick={() => setIsSearchFocused(false)}
+              size={20}
+            />
+          ) : (
+            <BiSearch size={20} className="" />
+          )}
           <Input
-            className="flex-1 border-none placeholder:text-zinc-300 focus-visible:ring-0"
-            placeholder="search..."
+            className="search-input flex-1 border-none placeholder:text-zinc-300 focus-visible:ring-0"
+            placeholder="search username or email..."
             value={searchedInput}
             onChange={(e) => setsearchedInput(e.target.value)}
+            onFocus={() => setIsSearchFocused(true)}
           />
         </div>
         <Button
@@ -67,13 +84,19 @@ const Sidebar = () => {
         </Button>
       </div>
       <div className="w-full flex-grow  overflow-hidden">
-        <ScrollArea className="h-full w-full">
-          {/* {searchedUsers &&
+        <ScrollArea className="h-full w-full scroll-container">
+          {isSearchFocused ? (
+            searchedUsers &&
             searchedUsers.map((user) => {
-              return <UserCard user={user} key={user._id} />;
-            })} */}
-
-          {userChats ? (
+              return (
+                <UserCard
+                  setSearchFocusedFalse={() => setIsSearchFocused(false)}
+                  user={user}
+                  key={user._id}
+                />
+              );
+            })
+          ) : userChats ? (
             userChats.map((chat) => {
               return <ChatCard chatData={chat} key={chat._id} />;
             })

@@ -10,16 +10,25 @@ import { MessageType } from "@/lib/api-helpers/messages";
 import MessageCard from "./MessageCard";
 import { ScrollArea } from "../ui/scroll-area";
 import ChatFooter from "./ChatFooter";
-import { Button } from "../ui/button";
 import { setLatestMessage } from "@/lib/reduxStore/slices/chatsSlice";
+import {
+  setNewUnreadMessage,
+  clearUnreadMessages,
+} from "@/lib/reduxStore/slices/notifictionSlice";
+import TypingIndicator from "./TypingIndicator";
 
 const ChatContainer = () => {
   const dispatch = useDispatch();
-  const { currentChat } = useSelector((state: RootState) => state.chats);
+  const { currentChat, isTyping } = useSelector(
+    (state: RootState) => state.chats
+  );
+  console.log("current chat id : : ", currentChat);
   const { data } = useSelector((state: RootState) => state.user);
   const { socket } = useSelector((state: RootState) => state.socket);
+  const { unreadMessages } = useSelector(
+    (state: RootState) => state.notification
+  );
   const [messages, setMessages] = useState<MessageType[]>([]);
-
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const getMessages = async () => {
@@ -40,13 +49,19 @@ const ChatContainer = () => {
     if (!socket) return;
     socket.on("message recieved", (newMessageRecieved: MessageType) => {
       dispatch(setLatestMessage(newMessageRecieved));
+      console.log(
+        "message recieved chat id:::",
+        newMessageRecieved.chat._id,
+        "Current chat id:::",
+        currentChat?._id
+      );
       if (!currentChat || currentChat._id !== newMessageRecieved.chat._id) {
-        // give notificaion
+        dispatch(setNewUnreadMessage(newMessageRecieved));
       } else {
-        setMessages([...messages, newMessageRecieved]);
+        setMessages((state) => [...state, newMessageRecieved]);
       }
     });
-  });
+  }, [socket, currentChat]);
 
   useEffect(() => {
     getMessages();
@@ -54,7 +69,7 @@ const ChatContainer = () => {
 
   if (!currentChat)
     return (
-      <div className="flex-1 h-full flex flex-col gap-4 items-center justify-center">
+      <div className="max-md:hidden flex-1 h-full flex flex-col gap-4 items-center justify-center">
         <h3 className="text-4xl font-medium text-center">
           Select a user or group to start chating!!
         </h3>
@@ -63,16 +78,21 @@ const ChatContainer = () => {
     );
 
   return (
-    <div className="flex-1 h-full relative flex flex-col">
+    <div
+      className={`${
+        currentChat ? "flex" : "hidden"
+      } flex-1 h-full relative flex flex-col`}
+    >
       <ChatHeader />
       <div className="w-full flex-1 overflow-hidden">
-        <ScrollArea className="h-full w-full">
-          <div className="flex flex-col gap-2 h-full px-6 pb-2">
+        <ScrollArea className="h-full w-full px-6 pb-2">
+          <div className="flex flex-col gap-2 h-full ">
             <div className="flex-1"></div>
             {messages &&
               messages.map((message) => (
                 <MessageCard key={message._id} message={message} />
               ))}
+            {isTyping && <TypingIndicator />}
             <div ref={scrollRef}></div>
           </div>
         </ScrollArea>

@@ -11,6 +11,5 @@ export function getSingleChatName(
   currentUserId: string
 ) {
   const otherMember = members.find((member) => member._id !== currentUserId);
-  console.log("CURRENT USER ID : ", currentUserId, "MEMEBER : ", members);
   return otherMember?.username || "";
 }

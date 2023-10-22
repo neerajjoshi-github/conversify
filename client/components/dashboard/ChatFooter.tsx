@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AiOutlineSend } from "react-icons/ai";
 import { BsEmojiSmile } from "react-icons/bs";
@@ -20,11 +20,13 @@ import { sendMessage } from "@/lib/api-helpers/messages";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/reduxStore/store";
 import { toast } from "../ui/use-toast";
-import { setLatestMessage } from "@/lib/reduxStore/slices/chatsSlice";
+import {
+  setLatestMessage,
+  setIsTyping,
+} from "@/lib/reduxStore/slices/chatsSlice";
 
 const messageSchema = z.object({
   content: z.string().min(1).max(300),
-  chatId: z.string(),
 });
 
 type ChatFooterProps = {
@@ -32,6 +34,8 @@ type ChatFooterProps = {
 };
 
 const ChatFooter: React.FC<ChatFooterProps> = ({ refetchMessages }) => {
+  const [typing, setTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dispatch = useDispatch();
   const { currentChat } = useSelector((state: RootState) => state.chats);
   const { socket } = useSelector((state: RootState) => state.socket);
@@ -39,13 +43,50 @@ const ChatFooter: React.FC<ChatFooterProps> = ({ refetchMessages }) => {
     resolver: zodResolver(messageSchema),
     defaultValues: {
       content: "",
-      chatId: currentChat?._id!,
     },
   });
 
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("typing", () => {
+      dispatch(setIsTyping(true));
+    });
+    socket.on("stopedTyping", () => {
+      dispatch(setIsTyping(false));
+    });
+
+    return () => {
+      socket.off("typing");
+      socket.off("stopedTyping");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      if (!typing && value.content !== "") {
+        setTyping(true);
+        socket.emit("typing", currentChat?._id);
+      }
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      const timerLength = 3000;
+      typingTimeoutRef.current = setTimeout(() => {
+        socket.emit("stopedTyping", currentChat?._id);
+        setTyping(false);
+      }, timerLength);
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
+
   const onSubmit = async (values: z.infer<typeof messageSchema>) => {
     console.log("MESSAGE VALUE : ", values);
-    const response = await sendMessage(values);
+    socket.emit("stopedTyping", currentChat?._id);
+    const newMessage = {
+      content: values.content,
+      chatId: currentChat?._id!,
+    };
+    const response = await sendMessage(newMessage);
     if (response.success) {
       form.reset();
       dispatch(setLatestMessage(response.data));

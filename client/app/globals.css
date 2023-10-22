@@ -60,8 +60,13 @@
 
 .scroll-area-primitive > div {
   height: 100%;
+  display: block !important;
 }
 
 .flip {
   transform: rotateY(180deg);
+}
+
+.search-input:focus-within .scroll-container {
+  display: none;
 }

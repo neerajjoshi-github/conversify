@@ -1,16 +1,35 @@
 import { accessChat } from "@/lib/api-helpers/chats";
 import { UserFromDB } from "@/lib/api-helpers/user";
+import {
+  addNewUserChat,
+  setCurrentChat,
+} from "@/lib/reduxStore/slices/chatsSlice";
+import { RootState } from "@/lib/reduxStore/store";
 import Image from "next/image";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 type UserCardProps = {
   user: UserFromDB;
+  setSearchFocusedFalse: () => void;
 };
 
-const UserCard: React.FC<UserCardProps> = ({ user }) => {
+const UserCard: React.FC<UserCardProps> = ({ user, setSearchFocusedFalse }) => {
+  const dispatch = useDispatch();
+  const { userChats } = useSelector((state: RootState) => state.chats);
+
   const accessChatHandler = async () => {
     const response = await accessChat(user._id);
-    console.log(response);
+    if (response.success) {
+      dispatch(setCurrentChat(response.data));
+      const isAlreadyAChat = !!userChats?.find(
+        (chat) => chat._id === response.data._id
+      );
+      if (!isAlreadyAChat) {
+        dispatch(addNewUserChat(response.data));
+      }
+      setSearchFocusedFalse();
+    }
   };
   return (
     <div

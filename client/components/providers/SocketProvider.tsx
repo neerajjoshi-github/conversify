@@ -6,8 +6,11 @@ import io from "socket.io-client";
 import { RootState } from "@/lib/reduxStore/store";
 
 const ENDPOINT = "http://localhost:8080";
+
 export function SocketProvider({ children }: { children: ReactNode }) {
   const { data } = useSelector((state: RootState) => state.user);
+  const { currentChat } = useSelector((state: RootState) => state.chats);
+  const { socket } = useSelector((state: RootState) => state.socket);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -15,10 +18,15 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     const socket = io(ENDPOINT);
     dispatch(setSocket(socket));
     socket.emit("setup", data);
-    socket.on("connection", () => {
+    socket.on("connected", () => {
       console.log("SOCKET CONNECTED SUCCESSFULLY!!!");
     });
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.emit("join chat", currentChat);
+  }, [currentChat]);
 
   return <>{children}</>;
 }

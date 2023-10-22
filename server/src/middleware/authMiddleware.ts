@@ -8,7 +8,6 @@ interface JwtPayload {
 }
 
 export const authMiddleware: RequestHandler = (req, res, next) => {
-  console.log("AUTH MIDDLE WARE RUNNING ON LOGIN");
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
     if (!token) {

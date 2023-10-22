@@ -2,18 +2,27 @@
 import { RootState } from "@/lib/reduxStore/store";
 import Image from "next/image";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { BiSolidPencil } from "react-icons/bi";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import { getSingleChatName } from "@/lib/utils";
 import { Button } from "../ui/button";
+import { setCurrentChat } from "@/lib/reduxStore/slices/chatsSlice";
 
 const ChatHeader = () => {
   const { currentChat } = useSelector((state: RootState) => state.chats);
+  const { data } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
   if (!currentChat) return;
   return (
     <div className="h-16 w-full bg-secondary px-6 flex items-center gap-4 border-b border-border">
+      <div
+        onClick={() => dispatch(setCurrentChat(null))}
+        className="flex md:hidden items-center justify-center cursor-pointer"
+      >
+        <AiOutlineArrowLeft size={24} />
+      </div>
       <div className="relative w-12 h-12 rounded-full overflow-hidden bg-foreground">
         <Image
           src={
@@ -30,7 +39,7 @@ const ChatHeader = () => {
         <span className="text-xl font-semibold">
           {currentChat.isGroupChat
             ? currentChat.chatName
-            : getSingleChatName(currentChat.members, "")}
+            : getSingleChatName(currentChat.members, data?.userId!)}
         </span>
         <span className="text-xs text-zinc-500 font-semibold">
           Created on {moment(currentChat.createdAt).format("DD MMM YYYY")}

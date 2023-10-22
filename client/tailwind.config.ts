@@ -23,6 +23,10 @@ const config: Config = {
       fontSize: {
         xxs: ["10px", "16px"],
       },
+      boxShadow: {
+        message: "2px 2px 6px -2px rgba(0, 0, 0, 0.3)",
+        "primary-message": "-2px 2px 6px -2px rgba(0, 0, 0, 0.5);",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
