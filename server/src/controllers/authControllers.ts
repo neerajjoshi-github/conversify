@@ -5,7 +5,7 @@ import { generateJWT } from "../utils/token";
 import bcrypt from "bcrypt";
 
 export const register: RequestHandler = async (req, res, next) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, imageURL } = req.body;
 
   try {
     if (!username || !email || !password) {
@@ -24,6 +24,7 @@ export const register: RequestHandler = async (req, res, next) => {
       username,
       email,
       password,
+      imageURL,
     });
 
     res.status(200).json({

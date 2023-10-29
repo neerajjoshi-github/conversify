@@ -8,6 +8,8 @@ import { RootState } from "@/lib/reduxStore/store";
 import Image from "next/image";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import ProfileImage from "./ProfileImage";
+import moment from "moment";
 
 type UserCardProps = {
   user: UserFromDB;
@@ -37,15 +39,15 @@ const UserCard: React.FC<UserCardProps> = ({ user, setSearchFocusedFalse }) => {
       className="w-full px-4 py-2 flex items-center cursor-pointer hover:bg-foreground/10 transition duration-300 border-b border-border"
     >
       <div className="flex gap-2 w-full">
-        <div className="relative w-14 h-14 rounded-full overflow-hidden bg-purple-400">
-          <Image src={user.imageURL} fill alt="Profile" objectFit="cover" />
-        </div>
+        <ProfileImage imageURL={user.imageURL} />
         <div className="flex-1 flex flex-col justify-center">
           <span className="text-foreground font-semibold">{user.username}</span>
           <p className="text-xs truncate text-zinc-500">{user.email}</p>
         </div>
         <div className="flex items-end">
-          <span className="text-zinc-500 text-xs">10:00pm</span>
+          <span className="text-zinc-500 text-xs">
+            {moment(user.createdAt).format("DD/MM/YYYY")}
+          </span>
         </div>
       </div>
     </div>

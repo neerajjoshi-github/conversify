@@ -87,7 +87,7 @@ export const fetchUserChats: RequestHandler = async (req, res, next) => {
 
 export const createGroupChat: RequestHandler = async (req, res, next) => {
   const userId = req.body.userId;
-  const { chatName, members } = req.body;
+  const { chatName, members, imageURL } = req.body;
   try {
     if (!chatName || !members) {
       throw createHttpError(404, "Please fill all the required fields.");
@@ -104,6 +104,7 @@ export const createGroupChat: RequestHandler = async (req, res, next) => {
       groupAdmin: userId,
       members: [userId, ...members],
       chatName,
+      imageURL,
     });
 
     const data = await ChatModel.findById(createdGroupChat._id)

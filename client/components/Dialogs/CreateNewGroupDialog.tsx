@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +28,11 @@ import { toast } from "../ui/use-toast";
 import AsyncSelect from "react-select/async";
 import { UserFromDB, search } from "@/lib/api-helpers/user";
 import { addNewUserChat } from "@/lib/reduxStore/slices/chatsSlice";
+import { Result, createAvatar } from "@dicebear/core";
+import Image from "next/image";
+import { thumbs } from "@dicebear/collection";
+import axios from "axios";
+import { uploadAvatar } from "@/lib/api-helpers/cloudinary";
 
 const searchUsers = async (inputValue: string) => {
   const response = await search(inputValue);
@@ -44,10 +49,30 @@ const options = (inputValue: string) =>
   });
 
 const CreateNewGroupDialog = () => {
+  const [groupAvatar, setGroupAvatar] = useState<Result | null>(null);
   const dispatch = useDispatch();
   const { isCreateGroupModalOpen } = useSelector(
     (state: RootState) => state.dialog
   );
+
+  useEffect(() => {
+    if (!isCreateGroupModalOpen) return;
+    const avatar = createAvatar(thumbs, {
+      seed: crypto.randomUUID(),
+      backgroundColor: [
+        "b6e3f4",
+        "c0aede",
+        "d1d4f9",
+        "F875AA",
+        "FFDFDF",
+        "98E4FF",
+        "176B87",
+      ],
+      backgroundType: ["gradientLinear", "solid"],
+      shapeColor: ["4D4C7D", "005B41", "713ABE", "FF6969", "79155B", "001C30"],
+    });
+    setGroupAvatar(avatar);
+  }, [isCreateGroupModalOpen]);
 
   const form = useForm<z.infer<typeof groupSchema>>({
     resolver: zodResolver(groupSchema),
@@ -58,8 +83,9 @@ const CreateNewGroupDialog = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof groupSchema>) => {
-    console.log("Create group form values :", values);
-    const response = await createGroupChat(values);
+    const imageURL = await uploadAvatar(groupAvatar?.toString()!);
+    console.log("Create group form values :", { ...values, imageURL });
+    const response = await createGroupChat({ ...values, imageURL });
     if (response.success) {
       toast({
         description: response.message,
@@ -85,6 +111,19 @@ const CreateNewGroupDialog = () => {
             <h1 className="text-4xl font-semibold font-dancing-script underline underline-offset-2">
               Create a new group
             </h1>
+            <div className="flex justify-center">
+              <div className="w-24 h-24 rounded-full flex items-center justify-center border border-gray-400 overflow-hidden">
+                {groupAvatar && (
+                  <Image
+                    src={groupAvatar.toDataUriSync()}
+                    alt=""
+                    width={96}
+                    height={96}
+                    className="object-contain"
+                  />
+                )}
+              </div>
+            </div>
             <FormField
               control={form.control}
               name="chatName"

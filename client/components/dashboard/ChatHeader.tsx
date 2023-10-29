@@ -6,9 +6,10 @@ import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { getSingleChatName } from "@/lib/utils";
+import { getSingleChatImage, getSingleChatName } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { setCurrentChat } from "@/lib/reduxStore/slices/chatsSlice";
+import ProfileImage from "./ProfileImage";
 
 const ChatHeader = () => {
   const { currentChat } = useSelector((state: RootState) => state.chats);
@@ -23,18 +24,14 @@ const ChatHeader = () => {
       >
         <AiOutlineArrowLeft size={24} />
       </div>
-      <div className="relative w-12 h-12 rounded-full overflow-hidden bg-foreground">
-        <Image
-          src={
-            currentChat.isGroupChat
-              ? "/svgs/group-icon.svg"
-              : "/svgs/single-user-icon.svg"
-          }
-          fill
-          alt="Profile"
-          objectFit="contain"
-        />
-      </div>
+      <ProfileImage
+        imageURL={
+          currentChat.isGroupChat
+            ? currentChat.imageURL!
+            : getSingleChatImage(currentChat.members, data?.userId!)
+        }
+        size="lg"
+      />
       <div className="flex flex-col">
         <span className="text-xl font-semibold">
           {currentChat.isGroupChat
@@ -42,7 +39,8 @@ const ChatHeader = () => {
             : getSingleChatName(currentChat.members, data?.userId!)}
         </span>
         <span className="text-xs text-zinc-500 font-semibold">
-          Created on {moment(currentChat.createdAt).format("DD MMM YYYY")}
+          {currentChat.isGroupChat ? "Created" : "Joined"} on{" "}
+          {moment(currentChat.createdAt).format("DD MMM YYYY")}
         </span>
       </div>
       <div className="flex items-center justify-center ml-auto">

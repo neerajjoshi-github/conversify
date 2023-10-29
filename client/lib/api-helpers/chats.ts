@@ -11,6 +11,7 @@ export type ChatType = {
   groupAdmin: UserFromDB;
   createdAt: string;
   updatedAt: string;
+  imageURL?: string;
 };
 
 type FailedResponse = {
@@ -57,6 +58,7 @@ export const accessChat = async (
 type CreateGroupChatPrams = {
   members: string[];
   chatName: string;
+  imageURL: string;
 };
 
 export const createGroupChat = async (

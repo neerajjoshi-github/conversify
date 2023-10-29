@@ -24,7 +24,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !currentChat) return;
     socket.emit("join chat", currentChat);
   }, [currentChat]);
 

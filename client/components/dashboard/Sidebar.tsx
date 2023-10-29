@@ -16,7 +16,6 @@ import { RootState } from "@/lib/reduxStore/store";
 import { setUserChats } from "@/lib/reduxStore/slices/chatsSlice";
 import ChatSkeleton from "./skeletons/ChatSkeleton";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { setChatNotification } from "@/lib/reduxStore/slices/notifictionSlice";
 
 const Sidebar = () => {
   const dispatch = useDispatch();

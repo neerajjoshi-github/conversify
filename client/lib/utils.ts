@@ -13,3 +13,10 @@ export function getSingleChatName(
   const otherMember = members.find((member) => member._id !== currentUserId);
   return otherMember?.username || "";
 }
+export function getSingleChatImage(
+  members: UserFromDB[],
+  currentUserId: string
+) {
+  const otherMember = members.find((member) => member._id !== currentUserId);
+  return otherMember?.imageURL || "";
+}

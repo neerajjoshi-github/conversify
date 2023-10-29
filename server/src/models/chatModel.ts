@@ -25,6 +25,9 @@ const chatSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
+    imageURL: {
+      type: String,
+    },
   },
   {
     timestamps: true,
