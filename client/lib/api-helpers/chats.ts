@@ -73,13 +73,19 @@ export const createGroupChat = async (
   return response;
 };
 
-export const updateGroupChat = async (
-  newChatName: string
-): Promise<SuccessAccessChatResponse | FailedResponse> => {
+type UpdateGoupParam = {
+  newChatName: string;
+  chatId: string;
+};
+
+export const updateGroupName = async ({
+  newChatName,
+  chatId,
+}: UpdateGoupParam): Promise<SuccessAccessChatResponse | FailedResponse> => {
   const response = await axiosHandler({
     method: "PUT",
     url: "chats/group",
-    data: { newChatName },
+    data: { newChatName, chatId },
   });
 
   return response;
@@ -89,6 +95,7 @@ type AddToGroupPrams = {
   memberId: string;
   chatId: string;
 };
+
 export const addToGroup = async (
   data: AddToGroupPrams
 ): Promise<SuccessAccessChatResponse | FailedResponse> => {
@@ -105,6 +112,7 @@ type RemoveFromGroupPrams = {
   memberId: string;
   chatId: string;
 };
+
 export const removeFromGroup = async (
   data: RemoveFromGroupPrams
 ): Promise<SuccessAccessChatResponse | FailedResponse> => {

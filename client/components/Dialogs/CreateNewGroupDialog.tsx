@@ -1,11 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleIsCreateGroupModalOpen } from "@/lib/reduxStore/slices/dialogSlice";
 import { RootState } from "@/lib/reduxStore/store";
@@ -26,13 +21,14 @@ import * as z from "zod";
 import { createGroupChat } from "@/lib/api-helpers/chats";
 import { toast } from "../ui/use-toast";
 import AsyncSelect from "react-select/async";
+import { MultiValue, PropsValue } from "react-select";
 import { UserFromDB, search } from "@/lib/api-helpers/user";
 import { addNewUserChat } from "@/lib/reduxStore/slices/chatsSlice";
 import { Result, createAvatar } from "@dicebear/core";
 import Image from "next/image";
 import { thumbs } from "@dicebear/collection";
-import axios from "axios";
 import { uploadAvatar } from "@/lib/api-helpers/cloudinary";
+import ProfileImage from "../dashboard/ProfileImage";
 
 const searchUsers = async (inputValue: string) => {
   const response = await search(inputValue);
@@ -145,6 +141,9 @@ const CreateNewGroupDialog = () => {
                   <FormLabel>Members</FormLabel>
                   <FormControl>
                     <AsyncSelect
+                      components={{
+                        Option: CustomOption,
+                      }}
                       placeholder="Select members...."
                       ref={ref}
                       onChange={(e) => {
@@ -188,6 +187,22 @@ const CreateNewGroupDialog = () => {
         </Form>
       </DialogContent>
     </Dialog>
+  );
+};
+
+export const CustomOption = ({ data, innerProps, innerRef }: any) => {
+  return (
+    <div
+      {...innerProps}
+      ref={innerRef}
+      className="flex items-center gap-6 p-2 cursor-pointer hover:bg-background/80"
+    >
+      <ProfileImage imageURL={data.imageURL} size="sm" />
+      <div className="font-semibold flex flex-col">
+        <span className="text-sm">{data.username}</span>
+        <span className="text-xs">{data.email}</span>
+      </div>
+    </div>
   );
 };
 

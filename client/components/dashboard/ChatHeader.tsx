@@ -1,7 +1,6 @@
 "use client";
 import { RootState } from "@/lib/reduxStore/store";
-import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -10,6 +9,7 @@ import { getSingleChatImage, getSingleChatName } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { setCurrentChat } from "@/lib/reduxStore/slices/chatsSlice";
 import ProfileImage from "./ProfileImage";
+import { toggleIsUpdateGroupMenuOpen } from "@/lib/reduxStore/slices/dialogSlice";
 
 const ChatHeader = () => {
   const { currentChat } = useSelector((state: RootState) => state.chats);
@@ -43,11 +43,17 @@ const ChatHeader = () => {
           {moment(currentChat.createdAt).format("DD MMM YYYY")}
         </span>
       </div>
-      <div className="flex items-center justify-center ml-auto">
-        <Button size="icon" variant="ghost" title="Edit">
+      {currentChat.isGroupChat && (
+        <Button
+          onClick={() => dispatch(toggleIsUpdateGroupMenuOpen())}
+          size="icon"
+          variant="ghost"
+          title="Update Group"
+          className="ml-auto"
+        >
           <BsThreeDotsVertical size={24} />
         </Button>
-      </div>
+      )}
     </div>
   );
 };

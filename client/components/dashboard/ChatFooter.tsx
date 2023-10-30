@@ -16,7 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { sendMessage } from "@/lib/api-helpers/messages";
+import { MessageType, sendMessage } from "@/lib/api-helpers/messages";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/reduxStore/store";
 import { toast } from "../ui/use-toast";
@@ -30,10 +30,10 @@ const messageSchema = z.object({
 });
 
 type ChatFooterProps = {
-  refetchMessages: () => void;
+  setNewMessage: (newMessage: MessageType) => void;
 };
 
-const ChatFooter: React.FC<ChatFooterProps> = ({ refetchMessages }) => {
+const ChatFooter: React.FC<ChatFooterProps> = ({ setNewMessage }) => {
   const [typing, setTyping] = useState(false);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dispatch = useDispatch();
@@ -90,7 +90,7 @@ const ChatFooter: React.FC<ChatFooterProps> = ({ refetchMessages }) => {
     if (response.success) {
       form.reset();
       dispatch(setLatestMessage(response.data));
-      refetchMessages();
+      setNewMessage(response.data);
       if (socket) {
         socket.emit("new message", response.data);
       }

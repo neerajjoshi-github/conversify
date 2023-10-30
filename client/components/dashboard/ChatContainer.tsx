@@ -16,6 +16,7 @@ import {
   setNewUnreadMessage,
 } from "@/lib/reduxStore/slices/notifictionSlice";
 import TypingIndicator from "./TypingIndicator";
+import MessageBubbleSkeleton from "./skeletons/MessageBubbleSkeleton";
 
 const ChatContainer = () => {
   const dispatch = useDispatch();
@@ -25,13 +26,17 @@ const ChatContainer = () => {
   const { socket } = useSelector((state: RootState) => state.socket);
   const [messages, setMessages] = useState<MessageType[]>([]);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const getMessages = async () => {
+    setLoading(true);
     if (!currentChat) return null;
     const response = await getAllMessagesForAChat(currentChat._id);
     if (response.success) {
       setMessages(response.data);
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -60,6 +65,7 @@ const ChatContainer = () => {
   }, [socket, currentChat]);
 
   useEffect(() => {
+    if (!currentChat) return;
     getMessages();
     if (currentChat) {
       dispatch(clearUnreadMessages(currentChat._id));
@@ -87,23 +93,35 @@ const ChatContainer = () => {
         <ScrollArea className="h-full w-full px-3 sm:px-6 pb-2">
           <div className="flex flex-col gap-2 h-full ">
             <div className="flex-1"></div>
-            {messages &&
-              messages.map((message, index) => (
-                <MessageCard
-                  key={message._id}
-                  message={message}
-                  isGroupChat={currentChat.isGroupChat}
-                  isLastMessage={
-                    message.sender._id !== messages[index + 1]?.sender._id
-                  }
-                />
-              ))}
-            {isTyping && <TypingIndicator />}
+
+            {loading ? (
+              <MessageBubbleSkeleton />
+            ) : (
+              <>
+                {messages &&
+                  messages.map((message, index) => (
+                    <MessageCard
+                      key={message._id}
+                      message={message}
+                      isGroupChat={currentChat.isGroupChat}
+                      isLastMessage={
+                        message.sender._id !== messages[index + 1]?.sender._id
+                      }
+                    />
+                  ))}
+                {isTyping && <TypingIndicator />}
+              </>
+            )}
+
             <div ref={scrollRef}></div>
           </div>
         </ScrollArea>
       </div>
-      <ChatFooter refetchMessages={getMessages} />
+      <ChatFooter
+        setNewMessage={(newMessage) =>
+          setMessages((state) => [...state, newMessage])
+        }
+      />
     </div>
   );
 };
