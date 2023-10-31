@@ -2,12 +2,15 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { RootState } from "@/lib/reduxStore/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/lib/reduxStore/slices/userSlice";
 
 const AuthorizationProvider = ({ children }: { children: React.ReactNode }) => {
-  const user = useSelector((state: RootState) => state.user.data);
-  console.log("USER FROM STATE : ", user);
+  const dispatch = useDispatch();
   const router = useRouter();
+  const user = JSON.parse(localStorage.getItem("userInfo") as string) || null;
+  dispatch(setUser(user));
+
   if (user) {
     return children;
   } else {

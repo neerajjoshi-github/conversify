@@ -1,7 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api/",
+  baseURL:
+    process.env.NEXT_PUBLIC_SERVER_BASE_URL || "http://localhost:8080/api/",
 });
 
 const getToken = () => {

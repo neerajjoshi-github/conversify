@@ -34,11 +34,11 @@ const LoginForm = () => {
     console.log("Login form values :", values);
     const response = await login(values);
     if (response.success) {
+      localStorage.setItem("userInfo", JSON.stringify(response.data));
       router.push("/dashboard");
       toast({
         description: response.message,
       });
-      localStorage.setItem("userInfo", JSON.stringify(response.data));
       form.reset();
     } else {
       form.setError("password", { message: response.message });

@@ -14,10 +14,7 @@ export interface UserState {
 }
 
 const initialState: UserState = {
-  data:
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("userInfo") as string)
-      : null,
+  data: null,
 };
 
 export const userSlice = createSlice({
