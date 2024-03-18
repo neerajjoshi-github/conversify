@@ -19,7 +19,9 @@ const AuthorizationProvider = ({ children }: { children: React.ReactNode }) => {
   if (currentUser) {
     return children;
   } else {
-    router.replace("/login");
+    useEffect(() => {
+      router.replace("/login");
+    }, []);
     return null;
   }
 };
