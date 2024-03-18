@@ -8,6 +8,9 @@ import userRoutes from "./routes/userRoutes";
 import chatRoutes from "./routes/chatRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import { authMiddleware } from "./middleware/authMiddleware";
+import env from "./utils/vaildateEnv";
+
+const crosOrigin = env.CORS_ORIGIN;
 
 const app = express();
 const server = createServer(app);
@@ -15,7 +18,7 @@ const server = createServer(app);
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: crosOrigin,
   },
 });
 
@@ -51,7 +54,7 @@ io.on("connection", (socket) => {
 });
 
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: crosOrigin }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", authMiddleware, userRoutes);
