@@ -4,7 +4,11 @@ import { useDispatch } from "react-redux";
 import { setUser } from "@/lib/reduxStore/slices/userSlice";
 
 const AuthorizationProvider = ({ children }: { children: React.ReactNode }) => {
-  const user = JSON.parse(localStorage.getItem("userInfo") as string) || null;
+  let user: any = null;
+
+  if (typeof window !== "undefined") {
+    user = JSON.parse(localStorage.getItem("userInfo") as string) || null;
+  }
   const dispatch = useDispatch();
   const router = useRouter();
 
