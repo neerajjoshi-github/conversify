@@ -2,23 +2,25 @@
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/lib/reduxStore/slices/userSlice";
+import { useEffect } from "react";
 
 const AuthorizationProvider = ({ children }: { children: React.ReactNode }) => {
-  let user: any = null;
-
-  if (typeof window !== "undefined") {
-    user = JSON.parse(localStorage.getItem("userInfo") as string) || null;
-  }
   const dispatch = useDispatch();
   const router = useRouter();
 
-  if (!user) {
-    router.replace("/login");
-  } else {
-    dispatch(setUser(user));
-  }
+  useEffect(() => {
+    let user: any = null;
+    if (typeof window !== "undefined") {
+      user = JSON.parse(localStorage.getItem("userInfo") as string) || null;
+    }
+    if (!user) {
+      router.replace("/login");
+    } else {
+      dispatch(setUser(user));
+    }
+  }, []);
 
-  return user ? <>{children}</> : null;
+  return <>{children}</>;
 };
 
 export default AuthorizationProvider;
